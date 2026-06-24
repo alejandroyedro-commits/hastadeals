@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Pagos · 21.com & BoraWin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b0d;
+  --panel:#0f1115;
+  --card:#14171c;
+  --card-2:#1a1e25;
+  --input:#15191f;
+  --line:rgba(255,255,255,.07);
+  --line-2:rgba(255,255,255,.13);
+  --text:#eceef1;
+  --muted:#8b919c;
+  --faint:#5c626d;
+  --green:#b4f03c; --green-dim:rgba(180,240,60,.13); --green-line:rgba(180,240,60,.32);
+  --gold:#edc94d;  --gold-dim:rgba(237,201,77,.13);  --gold-line:rgba(237,201,77,.32);
+  --danger:#e76d57;
+  --ok:#5fd38a;
+  --warn:#d9a441;
+  --radius:14px;
+  --accent:var(--green); --accent-dim:var(--green-dim); --accent-line:var(--green-line);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(900px 520px at 88% -8%, rgba(237,201,77,.07), transparent 60%),
+    radial-gradient(820px 520px at 6% -6%, rgba(180,240,60,.06), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  font-family:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.disp{font-family:'Space Grotesk',sans-serif}
+button{font-family:inherit}
+input,select,textarea{font-family:inherit;font-size:15px}
+::selection{background:rgba(180,240,60,.25)}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid transparent;
+  border-radius:10px;padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;
+  transition:background .15s,border-color .15s,transform .05s,opacity .15s;background:transparent;color:var(--text)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn-primary{background:#e9ebef;color:#0b0d10;border-color:#e9ebef}
+.btn-primary:hover{background:#fff;border-color:#fff}
+.btn-ghost{background:rgba(255,255,255,.025);border-color:var(--line-2);color:var(--muted)}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.05)}
+.btn-accent{background:var(--accent);color:#0a0b0d;border-color:var(--accent);box-shadow:0 0 0 0 var(--accent-line)}
+.btn-accent:hover{filter:brightness(1.06)}
+.btn-accent:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.btn-danger{background:transparent;border-color:rgba(231,109,87,.35);color:var(--danger)}
+.btn-danger:hover{background:rgba(231,109,87,.1);border-color:rgba(231,109,87,.6)}
+.btn-sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.icon-btn{width:30px;height:30px;padding:0;border-radius:8px;color:var(--muted);border:1px solid transparent;
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;background:transparent;font-size:16px;line-height:1;transition:.15s}
+.icon-btn:hover{background:rgba(255,255,255,.06);color:var(--text)}
+
+/* ---------- inputs ---------- */
+label.fld{display:flex;flex-direction:column;gap:6px;font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.input,select.input,textarea.input{width:100%;background:var(--input);border:1px solid var(--line-2);color:var(--text);
+  border-radius:10px;padding:10px 12px;outline:none;transition:border-color .15s,box-shadow .15s}
+.input:focus,select.input:focus,textarea.input:focus{border-color:var(--accent-line);box-shadow:0 0 0 3px var(--accent-dim)}
+textarea.input{resize:vertical;min-height:84px;line-height:1.5}
+select.input{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 18px,calc(100% - 13px) 18px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+
+/* ---------- login ---------- */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;z-index:50;
+  background:radial-gradient(700px 480px at 50% 12%, rgba(255,255,255,.025), transparent 60%),var(--bg)}
+.login-card{width:100%;max-width:380px;background:linear-gradient(180deg,#15191f,#101318);border:1px solid var(--line);
+  border-radius:20px;padding:30px 28px 26px;box-shadow:0 30px 80px rgba(0,0,0,.55);position:relative;overflow:hidden}
+.login-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--green),var(--gold))}
+.login-logos{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+.login-logos img{width:54px;height:54px;border-radius:13px;border:1px solid var(--line-2)}
+.login-card h1{font-family:'Space Grotesk';font-size:21px;margin:0 0 4px;text-align:center;letter-spacing:-.01em}
+.login-card .sub{text-align:center;color:var(--muted);font-size:12.5px;margin-bottom:22px}
+.login-card .sub b.g{color:var(--green)} .login-card .sub b.d{color:var(--gold)}
+.login-err{color:var(--danger);font-size:13px;text-align:center;min-height:18px;margin-top:10px}
+.login-hint{margin-top:16px;text-align:center;color:var(--faint);font-size:11.5px;line-height:1.5}
+
+/* ---------- app shell ---------- */
+#app{display:none;max-width:1080px;margin:0 auto;padding:0 20px 80px}
+#app.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.topbar{position:sticky;top:0;z-index:20;margin:0 -20px 22px;padding:14px 20px;
+  background:rgba(10,11,13,.78);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar-inner{display:flex;align-items:center;gap:14px;max-width:1080px;margin:0 auto}
+.brand-lock{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-imgs{display:flex} .brand-imgs img{width:34px;height:34px;border-radius:9px;border:1px solid var(--line-2)}
+.brand-imgs img:last-child{margin-left:-9px}
+.brand-txt{min-width:0}
+.brand-txt .t{font-family:'Space Grotesk';font-weight:600;font-size:16px;line-height:1.1}
+.brand-txt .s{font-size:11px;color:var(--faint);letter-spacing:.04em}
+.topbar .sp{flex:1}
+
+/* ---------- summary ---------- */
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 17px;position:relative;overflow:hidden}
+.stat .lab{display:flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+.stat .lab img{width:16px;height:16px;border-radius:5px}
+.stat .amt{font-family:'JetBrains Mono';font-weight:500;font-size:21px;line-height:1.25;letter-spacing:-.02em;word-break:break-word}
+.stat .amt .cline{display:block}
+.stat .meta{margin-top:8px;font-size:12px;color:var(--faint)}
+.stat.b21{border-color:var(--green-line)} .stat.b21 .amt{color:var(--green)}
+.stat.bbora{border-color:var(--gold-line)} .stat.bbora .amt{color:var(--gold)}
+.stat.b21::after,.stat.bbora::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.stat.b21::after{background:var(--green)} .stat.bbora::after{background:var(--gold)}
+
+/* ---------- quick add ---------- */
+.quick{background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--line-2);
+  border-radius:var(--radius);padding:15px 16px;margin-bottom:22px;transition:box-shadow .25s}
+.quick.flash{box-shadow:0 0 0 3px var(--accent-dim),0 0 24px -6px var(--accent-line)}
+.quick h2{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.quick-row{display:grid;grid-template-columns:1.4fr .9fr 1.4fr auto;gap:10px;align-items:end}
+.quick-empty{color:var(--faint);font-size:13.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+
+/* ---------- deals section ---------- */
+.sec-head{display:flex;align-items:center;gap:12px;margin:0 0 14px;flex-wrap:wrap}
+.sec-head h2{font-family:'Space Grotesk';font-size:18px;margin:0;font-weight:600}
+.sec-head .sp{flex:1}
+.filters{display:flex;gap:4px;background:var(--input);border:1px solid var(--line);border-radius:10px;padding:3px}
+.filters button{border:none;background:transparent;color:var(--muted);font-weight:600;font-size:13px;padding:6px 13px;border-radius:7px;cursor:pointer;transition:.15s}
+.filters button:hover{color:var(--text)}
+.filters button.on{background:rgba(255,255,255,.07);color:var(--text)}
+.filters button.on[data-f="21.com"]{color:var(--green)} .filters button.on[data-f="BoraWin"]{color:var(--gold)}
+
+.deals{display:flex;flex-direction:column;gap:13px}
+.deal{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--radius);overflow:hidden;transition:border-color .15s}
+.deal:hover{border-color:var(--line-2);border-left-color:var(--accent)}
+.deal-top{display:flex;align-items:flex-start;gap:14px;padding:15px 16px}
+.deal-main{min-width:0;flex:1}
+.deal-name{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.deal-name .nm{font-family:'Space Grotesk';font-weight:600;font-size:16.5px;letter-spacing:-.01em}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;padding:3px 9px 3px 4px;border-radius:20px;border:1px solid var(--line-2)}
+.badge img{width:17px;height:17px;border-radius:6px}
+.badge-21{color:var(--green);border-color:var(--green-line);background:var(--green-dim)}
+.badge-bora{color:var(--gold);border-color:var(--gold-line);background:var(--gold-dim)}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);font-weight:600}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.status.activo .dot{background:var(--ok)} .status.activo{color:var(--ok)}
+.status.pausado .dot{background:var(--warn)} .status.pausado{color:var(--warn)}
+.status.finalizado .dot{background:var(--faint)}
+.deal-terms{color:var(--muted);font-size:13px;margin-top:6px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.deal-terms .pill{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:7px;padding:2px 8px;font-size:12px}
+.deal-terms .last{color:var(--faint)}
+.deal-right{text-align:right;flex-shrink:0}
+.deal-total{font-family:'JetBrains Mono';font-weight:500;font-size:19px;letter-spacing:-.02em;color:var(--accent)}
+.deal-count{font-size:11.5px;color:var(--faint);margin-top:2px}
+.deal-actions{display:flex;gap:6px;padding:0 16px 14px;flex-wrap:wrap}
+
+/* payments list inside deal */
+.pays{border-top:1px solid var(--line);background:rgba(0,0,0,.18);padding:6px 10px;display:none}
+.pays.open{display:block}
+.pay-row{display:flex;align-items:center;gap:12px;padding:9px 8px;border-bottom:1px solid var(--line)}
+.pay-row:last-child{border-bottom:none}
+.pay-row .pamt{font-family:'JetBrains Mono';font-weight:500;font-size:14.5px;min-width:120px;color:var(--text)}
+.pay-row .pconc{flex:1;font-size:13.5px;color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pay-row .pdate{font-family:'JetBrains Mono';font-size:12.5px;color:var(--faint);white-space:nowrap}
+.pay-row.new{animation:popin .5s ease}
+@keyframes popin{0%{background:var(--accent-dim)}100%{background:transparent}}
+.pay-empty{padding:14px 8px;color:var(--faint);font-size:13px}
+
+/* ---------- recent feed ---------- */
+.feed{display:flex;flex-direction:column;gap:8px}
+.feed-row{display:flex;align-items:center;gap:13px;background:var(--card);border:1px solid var(--line);border-radius:11px;padding:11px 14px}
+.feed-row .famt{font-family:'JetBrains Mono';font-weight:500;font-size:15px;min-width:118px}
+.feed-row .fwho{flex:1;min-width:0}
+.feed-row .fwho .fnm{font-weight:600;font-size:14px}
+.feed-row .fdate{font-family:'JetBrains Mono';font-size:12px;color:var(--faint);white-space:nowrap}
+.feed-row[data-brand="21.com"] .famt{color:var(--green)}
+.feed-row[data-brand="BoraWin"] .famt{color:var(--gold)}
+
+/* ---------- empty state ---------- */
+.empty{text-align:center;padding:46px 20px;border:1px dashed var(--line-2);border-radius:var(--radius);background:rgba(255,255,255,.012)}
+.empty h3{font-family:'Space Grotesk';margin:0 0 6px;font-size:17px}
+.empty p{margin:0 0 18px;color:var(--muted);font-size:14px}
+
+/* ---------- section title small ---------- */
+.mini-title{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:30px 0 13px;display:flex;align-items:center;gap:9px}
+.mini-title::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* ---------- modal ---------- */
+.overlay{position:fixed;inset:0;background:rgba(5,6,8,.66);backdrop-filter:blur(4px);z-index:60;
+  display:none;align-items:flex-start;justify-content:center;padding:40px 18px;overflow-y:auto}
+.overlay.show{display:flex;animation:fade .2s ease}
+.modal{width:100%;max-width:520px;background:linear-gradient(180deg,#16191f,#111419);border:1px solid var(--line-2);
+  border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.6);overflow:hidden;animation:rise .25s cubic-bezier(.2,.7,.3,1)}
+@keyframes rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+.modal-head{display:flex;align-items:center;gap:10px;padding:17px 20px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-family:'Space Grotesk';margin:0;font-size:17px;flex:1}
+.modal-body{padding:20px}
+.modal-foot{display:flex;gap:10px;justify-content:flex-end;padding:16px 20px;border-top:1px solid var(--line);background:rgba(0,0,0,.15)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;border:1px solid var(--line-2);background:var(--input);color:var(--muted);font-weight:600;font-size:13.5px;
+  padding:9px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+.seg button img{width:18px;height:18px;border-radius:6px}
+.seg button.on[data-b="21.com"]{border-color:var(--green-line);background:var(--green-dim);color:var(--green)}
+.seg button.on[data-b="BoraWin"]{border-color:var(--gold-line);background:var(--gold-dim);color:var(--gold)}
+.stack{display:flex;flex-direction:column;gap:13px}
+.note{font-size:12px;color:var(--faint);line-height:1.5}
+.file-line{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.contract-view{white-space:pre-wrap;background:var(--input);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:13.5px;color:var(--text);max-height:240px;overflow:auto}
+
+/* footer note */
+.foot{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);color:var(--faint);font-size:12px;line-height:1.6;display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}
+.foot a{color:var(--muted)}
+
+@media (max-width:720px){
+  .summary{grid-template-columns:1fr}
+  .quick-row{grid-template-columns:1fr 1fr}
+  .quick-row .qbtn{grid-column:1/-1}
+  .grid2{grid-template-columns:1fr}
+  .deal-top{flex-wrap:wrap} .deal-right{text-align:left;width:100%;display:flex;justify-content:space-between;align-items:baseline}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="login">
+  <div class="login-card">
+    <div class="login-logos">
+      <img id="lg-bora" alt="BoraWin">
+      <img id="lg-21" alt="21.com">
+    </div>
+    <h1>Centro de Pagos</h1>
+    <div class="sub">Deals & payouts · <b class="g">21.com</b> · <b class="d">BoraWin</b></div>
+    <label class="fld">Contraseña
+      <input id="pw" class="input" type="password" placeholder="Ingresá la contraseña" autocomplete="off">
+    </label>
+    <div class="login-err" id="pw-err"></div>
+    <button class="btn btn-primary" id="pw-btn" style="width:100%;margin-top:6px;padding:11px">Entrar</button>
+    <div class="login-hint">Los datos se guardan solo en este navegador.<br>Acordate de hacer un backup cada tanto.</div>
+  </div>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand-lock">
+        <div class="brand-imgs"><img id="tb-bora" alt=""><img id="tb-21" alt=""></div>
+        <div class="brand-txt">
+          <div class="t">Centro de Pagos</div>
+          <div class="s">21.com · BoraWin</div>
+        </div>
+      </div>
+      <div class="sp"></div>
+      <button class="btn btn-ghost btn-sm" id="btn-backup">⎘ Backup</button>
+      <button class="btn btn-ghost btn-sm" id="btn-lock">Salir</button>
+    </div>
+  </div>
+
+  <!-- summary -->
+  <div class="summary" id="summary"></div>
+
+  <!-- quick add -->
+  <div class="quick" id="quick">
+    <h2>＋ Cargar pago rápido</h2>
+    <div id="quick-inner"></div>
+  </div>
+
+  <!-- deals -->
+  <div class="sec-head">
+    <h2>Deals</h2>
+    <div class="sp"></div>
+    <div class="filters" id="filters">
+      <button data-f="all" class="on">Todos</button>
+      <button data-f="21.com">21.com</button>
+      <button data-f="BoraWin">BoraWin</button>
+    </div>
+    <button class="btn btn-primary btn-sm" id="btn-new-deal">＋ Nuevo deal</button>
+  </div>
+  <div class="deals" id="deals"></div>
+
+  <!-- recent feed -->
+  <div id="feed-wrap" style="display:none">
+    <div class="mini-title">Últimos pagos · de todo</div>
+    <div class="feed" id="feed"></div>
+  </div>
+
+  <div class="foot">
+    <span>Guardado local en este navegador · sin nube.</span>
+    <span><a href="#" id="link-settings">Contraseña & datos</a></span>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<script>
+/* ============ logos (embebidos) ============ */
+const LOGO_21 = 'data:image/webp;base64,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';
+const LOGO_BORA = 'data:image/webp;base64,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';
+['lg-21','tb-21'].forEach(id=>document.getElementById(id).src=LOGO_21);
+['lg-bora','tb-bora'].forEach(id=>document.getElementById(id).src=LOGO_BORA);
+
+/* ============ config ============ */
+const STORAGE_KEY = 'centro_pagos_v1';
+const DEFAULT_PASSWORD = '1234';        // <-- contraseña por defecto. Cambiala desde "Contraseña & datos".
+const CURRENCIES = ['USD','BRL','EUR','ARS'];
+const BRANDS = {
+  '21.com':  {label:'21.com',  logo:LOGO_21,  badge:'badge-21',  accent:'var(--green)', dim:'var(--green-dim)', line:'var(--green-line)'},
+  'BoraWin': {label:'BoraWin', logo:LOGO_BORA, badge:'badge-bora', accent:'var(--gold)', dim:'var(--gold-dim)', line:'var(--gold-line)'}
+};
+
+/* ============ state ============ */
+let state = {password:DEFAULT_PASSWORD, deals:[]};
+let filter = 'all';
+const openDeals = new Set();   // ids con la lista de pagos abierta
+
+function load(){
+  try{const raw=localStorage.getItem(STORAGE_KEY); if(raw) state=JSON.parse(raw);}catch(e){}
+  if(!state || typeof state!=='object') state={};
+  if(!state.password) state.password=DEFAULT_PASSWORD;
+  if(!Array.isArray(state.deals)) state.deals=[];
+}
+function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
+
+/* ============ helpers ============ */
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function parseAmount(s){
+  s=String(s).trim().replace(/\s/g,'');
+  if(s==='') return NaN;
+  if(s.includes(',')&&s.includes('.')) s=s.replace(/\./g,'').replace(',', '.');
+  else if(s.includes(',')) s=s.replace(',', '.');
+  return Number(s);
+}
+function fmtMoney(n,cur){
+  const v=(Number(n)||0).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return (cur||'USD')+' '+v;
+}
+function fmtDateTime(ts){
+  const d=new Date(ts);
+  return d.toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+function dealTotal(d){return (d.payments||[]).reduce((s,p)=>s+(Number(p.amount)||0),0);}
+function lastPayment(d){
+  if(!d.payments||!d.payments.length) return null;
+  return d.payments.reduce((a,b)=>a.ts>b.ts?a:b);
+}
+function totalsByCur(deals){
+  const m={};
+  deals.forEach(d=>{const t=dealTotal(d); if(!t)return; m[d.currency]=(m[d.currency]||0)+t;});
+  return m;
+}
+function renderCurLines(map,cls){
+  const keys=Object.keys(map);
+  if(!keys.length) return '<span class="cline">'+ (cls||'') +'0,00</span>';
+  // ordenar por monto desc
+  keys.sort((a,b)=>map[b]-map[a]);
+  return keys.map(c=>'<span class="cline">'+fmtMoney(map[c],c)+'</span>').join('');
+}
+function termsLine(d){
+  const parts=[];
+  if(d.type) parts.push('<span class="pill">'+esc(d.type)+'</span>');
+  if(d.cpa) parts.push('<span class="pill">CPA '+fmtMoney(d.cpa,d.currency)+'</span>');
+  if(d.rev) parts.push('<span class="pill">Rev '+esc(d.rev)+'%</span>');
+  if(d.fixed) parts.push('<span class="pill">Fijo '+fmtMoney(d.fixed,d.currency)+'</span>');
+  const lp=lastPayment(d);
+  if(lp) parts.push('<span class="last">últ. pago '+fmtDateTime(lp.ts)+'</span>');
+  else parts.push('<span class="last">sin pagos aún</span>');
+  return parts.join('');
+}
+
+/* ============ auth ============ */
+function tryLogin(){
+  const val=$('#pw').value;
+  if(val===state.password){
+    $('#login').style.display='none';
+    $('#app').classList.add('on');
+    renderAll();
+  }else{
+    $('#pw-err').textContent='Contraseña incorrecta.';
+    $('#pw').value=''; $('#pw').focus();
+  }
+}
+$('#pw-btn').onclick=tryLogin;
+$('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
+$('#btn-lock').onclick=()=>{$('#app').classList.remove('on');$('#login').style.display='flex';$('#pw').value='';$('#pw-err').textContent='';$('#pw').focus();};
+
+/* ============ render: summary ============ */
+function renderSummary(){
+  const all=state.deals;
+  const d21=all.filter(d=>d.brand==='21.com');
+  const dbora=all.filter(d=>d.brand==='BoraWin');
+  const payCount=all.reduce((s,d)=>s+(d.payments?d.payments.length:0),0);
+  $('#summary').innerHTML=`
+    <div class="stat">
+      <div class="lab">Total cobrado</div>
+      <div class="amt">${renderCurLines(totalsByCur(all))}</div>
+      <div class="meta">${all.length} deal${all.length!==1?'s':''} · ${payCount} pago${payCount!==1?'s':''}</div>
+    </div>
+    <div class="stat b21">
+      <div class="lab"><img src="${LOGO_21}">21.com</div>
+      <div class="amt">${renderCurLines(totalsByCur(d21))}</div>
+      <div class="meta">${d21.length} deal${d21.length!==1?'s':''}</div>
+    </div>
+    <div class="stat bbora">
+      <div class="lab"><img src="${LOGO_BORA}">BoraWin</div>
+      <div class="amt">${renderCurLines(totalsByCur(dbora))}</div>
+      <div class="meta">${dbora.length} deal${dbora.length!==1?'s':''}</div>
+    </div>`;
+}
+
+/* ============ render: quick add ============ */
+function renderQuick(){
+  const inner=$('#quick-inner');
+  if(!state.deals.length){
+    inner.innerHTML='<div class="quick-empty">Todavía no hay deals. Creá uno para empezar a cargar pagos. <button class="btn btn-accent btn-sm" onclick="openDealModal()">＋ Nuevo deal</button></div>';
+    $('#quick').style.setProperty('--accent','var(--green)');
+    return;
+  }
+  const opts=state.deals.map(d=>`<option value="${d.id}">${esc(d.streamer)} — ${BRANDS[d.brand].label}</option>`).join('');
+  inner.innerHTML=`
+    <div class="quick-row">
+      <label class="fld">Deal
+        <select class="input" id="q-deal">${opts}</select>
+      </label>
+      <label class="fld">Monto
+        <input class="input mono" id="q-amount" inputmode="decimal" placeholder="0,00">
+      </label>
+      <label class="fld">Concepto <span style="color:var(--faint);font-weight:400">(opcional)</span>
+        <input class="input" id="q-concept" placeholder="Ej: FTDs junio, semana 3...">
+      </label>
+      <div class="qbtn"><button class="btn btn-accent" id="q-add" style="width:100%;height:42px">＋ Agregar pago</button></div>
+    </div>`;
+  const sel=$('#q-deal');
+  const applyAccent=()=>{const d=state.deals.find(x=>x.id===sel.value); const b=d?BRANDS[d.brand]:null; $('#quick').style.setProperty('--accent', b?b.accent:'var(--green)'); $('#quick').style.setProperty('--accent-dim', b?b.dim:'var(--green-dim)'); $('#quick').style.setProperty('--accent-line', b?b.line:'var(--green-line)');};
+  sel.onchange=applyAccent; applyAccent();
+  $('#q-add').onclick=quickAddPayment;
+  $('#q-amount').addEventListener('keydown',e=>{if(e.key==='Enter')quickAddPayment();});
+  $('#q-concept').addEventListener('keydown',e=>{if(e.key==='Enter')quickAddPayment();});
+}
+function quickAddPayment(){
+  const id=$('#q-deal').value;
+  const amt=parseAmount($('#q-amount').value);
+  const deal=state.deals.find(d=>d.id===id);
+  if(!deal) return;
+  if(!isFinite(amt)||amt<=0){$('#q-amount').focus();$('#q-amount').style.borderColor='var(--danger)';setTimeout(()=>$('#q-amount').style.borderColor='',1200);return;}
+  deal.payments=deal.payments||[];
+  const pid=uid();
+  deal.payments.push({id:pid,amount:amt,concept:$('#q-concept').value.trim(),ts:Date.now()});
+  save();
+  openDeals.add(deal.id);
+  flashId=pid;
+  renderAll();
+  $('#quick').classList.add('flash'); setTimeout(()=>$('#quick').classList.remove('flash'),650);
+  // restaurar selección y limpiar
+  const sel=$('#q-deal'); if(sel) sel.value=id; const a=$('#q-amount'); if(a){a.value='';a.focus();} const c=$('#q-concept'); if(c)c.value='';
+  const s2=$('#q-deal'); if(s2) s2.dispatchEvent(new Event('change'));
+}
+let flashId=null;
+
+/* ============ render: deals ============ */
+function renderDeals(){
+  const wrap=$('#deals');
+  let list=state.deals.slice();
+  if(filter!=='all') list=list.filter(d=>d.brand===filter);
+  // orden: por último pago desc, luego por creación desc
+  list.sort((a,b)=>{const la=lastPayment(a),lb=lastPayment(b);const ka=la?la.ts:(a.createdAt||0),kb=lb?lb.ts:(b.createdAt||0);return kb-ka;});
+
+  if(!state.deals.length){
+    wrap.innerHTML=`<div class="empty"><h3>Sin deals todavía</h3><p>Cargá el primer deal de tu socio para empezar a registrar contratos y pagos.</p><button class="btn btn-primary" onclick="openDealModal()">＋ Crear primer deal</button></div>`;
+    return;
+  }
+  if(!list.length){wrap.innerHTML=`<div class="empty"><p>No hay deals en ${esc(filter)}.</p></div>`;return;}
+
+  wrap.innerHTML=list.map(d=>{
+    const b=BRANDS[d.brand];
+    const total=dealTotal(d);
+    const isOpen=openDeals.has(d.id);
+    const pays=(d.payments||[]).slice().sort((x,y)=>y.ts-x.ts);
+    const st=(d.status||'Activo').toLowerCase();
+    const paysHtml = pays.length
+      ? pays.map(p=>`<div class="pay-row ${p.id===flashId?'new':''}">
+          <span class="pamt">${fmtMoney(p.amount,d.currency)}</span>
+          <span class="pconc">${p.concept?esc(p.concept):'<span style="color:var(--faint)">—</span>'}</span>
+          <span class="pdate">${fmtDateTime(p.ts)}</span>
+          <button class="icon-btn" title="Editar pago" onclick="openPaymentModal('${d.id}','${p.id}')">✎</button>
+          <button class="icon-btn" title="Borrar pago" onclick="delPayment('${d.id}','${p.id}')">✕</button>
+        </div>`).join('')
+      : '<div class="pay-empty">Este deal todavía no tiene pagos cargados.</div>';
+    return `
+    <div class="deal" data-brand="${d.brand}" style="--accent:${b.accent};--accent-dim:${b.dim};--accent-line:${b.line}">
+      <div class="deal-top">
+        <div class="deal-main">
+          <div class="deal-name">
+            <span class="nm">${esc(d.streamer)}</span>
+            <span class="badge ${b.badge}"><img src="${b.logo}">${b.label}</span>
+            <span class="status ${st}"><span class="dot"></span>${esc(d.status||'Activo')}</span>
+          </div>
+          <div class="deal-terms">${termsLine(d)}</div>
+        </div>
+        <div class="deal-right">
+          <div class="deal-total">${fmtMoney(total,d.currency)}</div>
+          <div class="deal-count">${pays.length} pago${pays.length!==1?'s':''}</div>
+        </div>
+      </div>
+      <div class="deal-actions">
+        <button class="btn btn-accent btn-sm" onclick="quickFor('${d.id}')">＋ Pago</button>
+        <button class="btn btn-ghost btn-sm" onclick="toggleDeal('${d.id}')">${isOpen?'▴ Ocultar pagos':'▾ Ver pagos ('+pays.length+')'}</button>
+        <button class="btn btn-ghost btn-sm" onclick="openContractModal('${d.id}')">📄 Contrato${d.contractFile?' •':''}</button>
+        <button class="btn btn-ghost btn-sm" onclick="openDealModal('${d.id}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="delDeal('${d.id}')">Eliminar</button>
+      </div>
+      <div class="pays ${isOpen?'open':''}">${paysHtml}</div>
+    </div>`;
+  }).join('');
+  flashId=null;
+}
+function toggleDeal(id){if(openDeals.has(id))openDeals.delete(id);else openDeals.add(id);renderDeals();}
+function quickFor(id){
+  const sel=$('#q-deal'); if(!sel)return;
+  sel.value=id; sel.dispatchEvent(new Event('change'));
+  const a=$('#q-amount'); if(a)a.focus();
+  $('#quick').scrollIntoView({behavior:'smooth',block:'center'});
+  $('#quick').classList.add('flash'); setTimeout(()=>$('#quick').classList.remove('flash'),900);
+}
+
+/* ============ render: feed ============ */
+function renderFeed(){
+  const rows=[];
+  state.deals.forEach(d=>(d.payments||[]).forEach(p=>rows.push({d,p})));
+  rows.sort((a,b)=>b.p.ts-a.p.ts);
+  const wrap=$('#feed-wrap');
+  if(!rows.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  $('#feed').innerHTML=rows.slice(0,15).map(({d,p})=>`
+    <div class="feed-row" data-brand="${d.brand}">
+      <span class="famt">${fmtMoney(p.amount,d.currency)}</span>
+      <div class="fwho">
+        <div class="fnm">${esc(d.streamer)} <span style="color:var(--faint);font-weight:500;font-size:12.5px">· ${BRANDS[d.brand].label}${p.concept?' · '+esc(p.concept):''}</span></div>
+      </div>
+      <span class="fdate">${fmtDateTime(p.ts)}</span>
+    </div>`).join('');
+}
+
+function renderAll(){renderSummary();renderQuick();renderDeals();renderFeed();}
+
+/* ============ filters ============ */
+$('#filters').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  filter=b.dataset.f;
+  [...$('#filters').children].forEach(x=>x.classList.toggle('on',x===b));
+  renderDeals();
+});
+$('#btn-new-deal').onclick=()=>openDealModal();
+
+/* ============ modal system ============ */
+const overlay=$('#overlay');
+function openModal(html){overlay.innerHTML=html;overlay.classList.add('show');}
+function closeModal(){overlay.classList.remove('show');overlay.innerHTML='';}
+overlay.addEventListener('mousedown',e=>{if(e.target===overlay)closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('show'))closeModal();});
+
+/* ============ deal modal (new/edit) ============ */
+function openDealModal(id){
+  const d = id ? state.deals.find(x=>x.id===id) : null;
+  const editing=!!d;
+  const cur=d?d.currency:'USD';
+  const today=new Date().toISOString().slice(0,10);
+  openModal(`
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><h3>${editing?'Editar deal':'Nuevo deal'}</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-body"><div class="stack">
+      <label class="fld">Streamer / socio
+        <input class="input" id="d-streamer" placeholder="Nombre del streamer" value="${d?esc(d.streamer):''}">
+      </label>
+      <div class="fld">Marca
+        <div class="seg" id="d-brand">
+          <button type="button" data-b="21.com" class="${(!d||d.brand==='21.com')?'on':''}"><img src="${LOGO_21}">21.com</button>
+          <button type="button" data-b="BoraWin" class="${(d&&d.brand==='BoraWin')?'on':''}"><img src="${LOGO_BORA}">BoraWin</button>
+        </div>
+      </div>
+      <div class="grid2">
+        <label class="fld">Tipo de deal
+          <select class="input" id="d-type">
+            ${['CPA','RevShare','Híbrido','Fijo','Otro'].map(t=>`<option ${d&&d.type===t?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </label>
+        <label class="fld">Moneda
+          <select class="input" id="d-cur">${CURRENCIES.map(c=>`<option ${cur===c?'selected':''}>${c}</option>`).join('')}</select>
+        </label>
+      </div>
+      <div class="grid2">
+        <label class="fld">CPA por FTD <span style="color:var(--faint);font-weight:400">(opc.)</span>
+          <input class="input mono" id="d-cpa" inputmode="decimal" placeholder="0" value="${d&&d.cpa?d.cpa:''}">
+        </label>
+        <label class="fld">RevShare % <span style="color:var(--faint);font-weight:400">(opc.)</span>
+          <input class="input mono" id="d-rev" inputmode="decimal" placeholder="0" value="${d&&d.rev?d.rev:''}">
+        </label>
+      </div>
+      <div class="grid2">
+        <label class="fld">Monto fijo <span style="color:var(--faint);font-weight:400">(opc.)</span>
+          <input class="input mono" id="d-fixed" inputmode="decimal" placeholder="0" value="${d&&d.fixed?d.fixed:''}">
+        </label>
+        <label class="fld">Estado
+          <select class="input" id="d-status">${['Activo','Pausado','Finalizado'].map(s=>`<option ${d&&d.status===s?'selected':''}>${s}</option>`).join('')}</select>
+        </label>
+      </div>
+      <label class="fld">Inicio
+        <input class="input" id="d-start" type="date" value="${d&&d.start?d.start:today}">
+      </label>
+      <label class="fld">Contrato / términos <span style="color:var(--faint);font-weight:400">(opcional)</span>
+        <textarea class="input" id="d-contract" placeholder="Pegá acá las condiciones del deal...">${d?esc(d.contract||''):''}</textarea>
+      </label>
+    </div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveDeal(${editing?`'${d.id}'`:'null'})">${editing?'Guardar cambios':'Crear deal'}</button>
+    </div>
+  </div>`);
+  const seg=$('#d-brand');
+  seg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...seg.children].forEach(x=>x.classList.toggle('on',x===b));});
+  setTimeout(()=>$('#d-streamer').focus(),50);
+}
+function saveDeal(id){
+  const streamer=$('#d-streamer').value.trim();
+  if(!streamer){$('#d-streamer').style.borderColor='var(--danger)';$('#d-streamer').focus();return;}
+  const brandBtn=$('#d-brand').querySelector('.on');
+  const brand=brandBtn?brandBtn.dataset.b:'21.com';
+  const data={
+    streamer, brand,
+    type:$('#d-type').value,
+    currency:$('#d-cur').value,
+    cpa:parseAmount($('#d-cpa').value)||0,
+    rev:parseAmount($('#d-rev').value)||0,
+    fixed:parseAmount($('#d-fixed').value)||0,
+    status:$('#d-status').value,
+    start:$('#d-start').value,
+    contract:$('#d-contract').value.trim()
+  };
+  if(id){
+    const d=state.deals.find(x=>x.id===id);
+    Object.assign(d,data);
+  }else{
+    state.deals.push(Object.assign({id:uid(),createdAt:Date.now(),payments:[],contractFile:null},data));
+  }
+  save();closeModal();renderAll();
+}
+function delDeal(id){
+  const d=state.deals.find(x=>x.id===id); if(!d)return;
+  const n=d.payments?d.payments.length:0;
+  if(!confirm('¿Eliminar el deal de "'+d.streamer+'"'+(n?' y sus '+n+' pagos':'')+'? No se puede deshacer.'))return;
+  state.deals=state.deals.filter(x=>x.id!==id);
+  save();renderAll();
+}
+
+/* ============ payment edit modal ============ */
+function openPaymentModal(dealId,payId){
+  const d=state.deals.find(x=>x.id===dealId); if(!d)return;
+  const p=d.payments.find(x=>x.id===payId); if(!p)return;
+  const dt=new Date(p.ts);
+  const date=dt.toISOString().slice(0,10);
+  const time=dt.toTimeString().slice(0,5);
+  openModal(`
+  <div class="modal" style="max-width:440px" role="dialog" aria-modal="true">
+    <div class="modal-head"><h3>Editar pago</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-body"><div class="stack">
+      <div class="note">${esc(d.streamer)} · ${BRANDS[d.brand].label} · ${d.currency}</div>
+      <label class="fld">Monto (${d.currency})
+        <input class="input mono" id="p-amount" inputmode="decimal" value="${p.amount}">
+      </label>
+      <label class="fld">Concepto
+        <input class="input" id="p-concept" value="${esc(p.concept||'')}" placeholder="(opcional)">
+      </label>
+      <div class="grid2">
+        <label class="fld">Fecha<input class="input" id="p-date" type="date" value="${date}"></label>
+        <label class="fld">Hora<input class="input" id="p-time" type="time" value="${time}"></label>
+      </div>
+    </div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="savePayment('${dealId}','${payId}')">Guardar</button>
+    </div>
+  </div>`);
+}
+function savePayment(dealId,payId){
+  const d=state.deals.find(x=>x.id===dealId);const p=d.payments.find(x=>x.id===payId);
+  const amt=parseAmount($('#p-amount').value);
+  if(!isFinite(amt)||amt<=0){$('#p-amount').style.borderColor='var(--danger)';return;}
+  p.amount=amt; p.concept=$('#p-concept').value.trim();
+  const ts=new Date($('#p-date').value+'T'+($('#p-time').value||'00:00')).getTime();
+  if(isFinite(ts)) p.ts=ts;
+  save();closeModal();openDeals.add(dealId);renderAll();
+}
+function delPayment(dealId,payId){
+  const d=state.deals.find(x=>x.id===dealId);if(!d)return;
+  if(!confirm('¿Borrar este pago?'))return;
+  d.payments=d.payments.filter(x=>x.id!==payId);
+  save();renderAll();
+}
+
+/* ============ contract modal ============ */
+function openContractModal(id){
+  const d=state.deals.find(x=>x.id===id); if(!d)return;
+  const file=d.contractFile;
+  openModal(`
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head"><h3>Contrato · ${esc(d.streamer)}</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-body"><div class="stack">
+      <label class="fld">Términos del deal
+        <textarea class="input" id="c-text" style="min-height:140px" placeholder="Condiciones, CPA, revshare, mínimos, cláusulas...">${esc(d.contract||'')}</textarea>
+      </label>
+      <div class="fld">Archivo del contrato <span style="color:var(--faint);font-weight:400">(PDF o imagen, opcional)</span>
+        <div class="file-line" id="c-fileline">
+          ${file?`<span>📎 ${esc(file.name)}</span><button class="btn btn-ghost btn-sm" type="button" onclick="openContractFile('${id}')">Abrir</button><button class="btn btn-danger btn-sm" type="button" onclick="removeContractFile('${id}')">Quitar</button>`:'<span style="color:var(--faint)">Sin archivo adjunto.</span>'}
+        </div>
+        <input type="file" id="c-file" accept=".pdf,image/*" style="margin-top:8px;color:var(--muted);font-size:13px">
+      </div>
+      <div class="note">El archivo se guarda dentro de este navegador. Manténelo liviano (ideal &lt; 1,5 MB) para no llenar el almacenamiento.</div>
+    </div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>
+      <button class="btn btn-primary" onclick="saveContract('${id}')">Guardar contrato</button>
+    </div>
+  </div>`);
+}
+function saveContract(id){
+  const d=state.deals.find(x=>x.id===id);
+  d.contract=$('#c-text').value.trim();
+  const f=$('#c-file').files[0];
+  if(f){
+    if(f.size>3*1024*1024){alert('El archivo pesa más de 3 MB. Usá uno más liviano.');return;}
+    const r=new FileReader();
+    r.onload=()=>{d.contractFile={name:f.name,type:f.type,data:r.result};save();closeModal();renderDeals();};
+    r.readAsDataURL(f); return;
+  }
+  save();closeModal();renderDeals();
+}
+function openContractFile(id){
+  const d=state.deals.find(x=>x.id===id); if(!d||!d.contractFile)return;
+  const w=window.open(); 
+  if(d.contractFile.type.includes('pdf')) w.document.write('<iframe src="'+d.contractFile.data+'" style="border:0;width:100%;height:100%"></iframe>');
+  else w.document.write('<img src="'+d.contractFile.data+'" style="max-width:100%">');
+}
+function removeContractFile(id){
+  const d=state.deals.find(x=>x.id===id);d.contractFile=null;save();openContractModal(id);
+}
+
+/* ============ settings / backup ============ */
+function openSettings(){
+  openModal(`
+  <div class="modal" style="max-width:460px" role="dialog" aria-modal="true">
+    <div class="modal-head"><h3>Contraseña & datos</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-body"><div class="stack">
+      <label class="fld">Cambiar contraseña
+        <input class="input" id="s-pw" type="text" value="${esc(state.password)}" placeholder="Nueva contraseña">
+      </label>
+      <div class="note">Es un bloqueo simple para esta pantalla. Como la página es pública, no guardes acá nada que no quieras que vean si comparten tu compu. La privacidad real es que los datos viven solo en este navegador.</div>
+      <div class="mini-title" style="margin:6px 0 4px">Backup</div>
+      <div class="file-line">
+        <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Exportar JSON</button>
+        <label class="btn btn-ghost btn-sm" style="cursor:pointer">⬆ Importar JSON<input type="file" id="s-import" accept=".json" hidden></label>
+      </div>
+      <div class="note">Exportá seguido: si limpiás el caché del navegador, los datos se borran. El JSON lo podés volver a importar acá.</div>
+      <div class="mini-title" style="margin:6px 0 4px">Zona peligrosa</div>
+      <button class="btn btn-danger btn-sm" style="align-self:flex-start" onclick="wipeAll()">Borrar todos los datos</button>
+    </div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Guardar contraseña</button>
+    </div>
+  </div>`);
+  $('#s-import').onchange=importData;
+}
+function saveSettings(){
+  const pw=$('#s-pw').value.trim()||DEFAULT_PASSWORD;
+  state.password=pw;save();closeModal();
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='centro-pagos-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  a.click();URL.revokeObjectURL(a.href);
+}
+function importData(e){
+  const f=e.target.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const obj=JSON.parse(r.result);
+      if(!obj||!Array.isArray(obj.deals)) throw 0;
+      if(!confirm('Esto reemplaza todos los datos actuales por los del archivo. ¿Seguir?'))return;
+      state=obj; if(!state.password)state.password=DEFAULT_PASSWORD;
+      save();closeModal();renderAll();
+    }catch(err){alert('El archivo no es un backup válido.');}
+  };
+  r.readAsText(f);
+}
+function wipeAll(){
+  if(!confirm('Esto borra TODOS los deals y pagos de este navegador. ¿Seguro?'))return;
+  if(!confirm('Última confirmación: no se puede deshacer.'))return;
+  state={password:state.password,deals:[]};save();closeModal();renderAll();
+}
+$('#btn-backup').onclick=openSettings;
+$('#link-settings').onclick=e=>{e.preventDefault();openSettings();};
+
+/* ============ init ============ */
+load();
+$('#pw').focus();
+</script>
+</body>
+</html>
