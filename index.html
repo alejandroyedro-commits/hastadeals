@@ -239,12 +239,16 @@ input::placeholder,textarea::placeholder{color:var(--faint)}
     </div>
     <h1>Centro de Pagos</h1>
     <div class="sub">Deals & payouts · <b class="g">21.com</b> · <b class="d">BoraWin</b></div>
-    <label class="fld">Contraseña
-      <input id="pw" class="input" type="password" placeholder="Ingresá la contraseña" autocomplete="off">
+    <label class="fld">Email
+      <input id="email" class="input" type="email" value="alejandroyedro@outlook.com" placeholder="tu@email.com" autocomplete="email">
+    </label>
+    <label class="fld" style="margin-top:12px">Contraseña
+      <input id="pw" class="input" type="password" placeholder="Ingresá tu contraseña" autocomplete="current-password">
     </label>
     <div class="login-err" id="pw-err"></div>
     <button class="btn btn-primary" id="pw-btn" style="width:100%;margin-top:6px;padding:11px">Entrar</button>
-    <div class="login-hint">Los datos se guardan solo en este navegador.<br>Acordate de hacer un backup cada tanto.</div>
+    <button class="btn btn-ghost" id="signup-btn" style="width:100%;margin-top:8px;padding:10px">Crear cuenta</button>
+    <div class="login-hint">Los pagos y deals se guardan online y se sincronizan entre tus dispositivos.</div>
   </div>
 </div>
 
@@ -294,13 +298,14 @@ input::placeholder,textarea::placeholder{color:var(--faint)}
   </div>
 
   <div class="foot">
-    <span>Guardado local en este navegador · sin nube.</span>
-    <span><a href="#" id="link-settings">Contraseña & datos</a></span>
+    <span>Guardado online · sincronizado con Supabase.</span>
+    <span><a href="#" id="link-settings">Cuenta & datos</a></span>
   </div>
 </div>
 
 <div class="overlay" id="overlay"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============ logos (embebidos) ============ */
 const LOGO_21 = 'data:image/webp;base64,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';
@@ -309,8 +314,13 @@ const LOGO_BORA = 'data:image/webp;base64,UklGRjwIAABXRUJQVlA4IDAIAABwLgCdASqgAK
 ['lg-bora','tb-bora'].forEach(id=>document.getElementById(id).src=LOGO_BORA);
 
 /* ============ config ============ */
-const STORAGE_KEY = 'centro_pagos_v1';
-const DEFAULT_PASSWORD = '1234';        // <-- contraseña por defecto. Cambiala desde "Contraseña & datos".
+const SUPABASE_URL = 'https://gzpwmtavtrazxccojyff.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_qhC6d-28lcbCKKdQCDvQAw_G7KV6QDB';
+const AUTHORIZED_EMAIL = 'alejandroyedro@outlook.com';
+const CLOUD_STATE_ID = 'main';
+const LEGACY_STORAGE_KEY = 'centro_pagos_v1';
+const MIGRATION_KEY = 'centro_pagos_cloud_migrated_v1';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const CURRENCIES = ['USD','BRL','EUR','ARS'];
 const BRANDS = {
   '21.com':  {label:'21.com',  logo:LOGO_21,  badge:'badge-21',  accent:'var(--green)', dim:'var(--green-dim)', line:'var(--green-line)'},
@@ -318,17 +328,56 @@ const BRANDS = {
 };
 
 /* ============ state ============ */
-let state = {password:DEFAULT_PASSWORD, deals:[]};
+let state = {deals:[]};
 let filter = 'all';
 const openDeals = new Set();   // ids con la lista de pagos abierta
 
-function load(){
-  try{const raw=localStorage.getItem(STORAGE_KEY); if(raw) state=JSON.parse(raw);}catch(e){}
-  if(!state || typeof state!=='object') state={};
-  if(!state.password) state.password=DEFAULT_PASSWORD;
-  if(!Array.isArray(state.deals)) state.deals=[];
+function normalizeState(raw){
+  const value = raw && typeof raw === 'object' ? raw : {};
+  return {deals:Array.isArray(value.deals) ? value.deals : []};
 }
-function save(){localStorage.setItem(STORAGE_KEY, JSON.stringify(state));}
+function legacyState(){
+  try{return normalizeState(JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || '{}'));}catch(e){return {deals:[]};}
+}
+function isAuthorizedEmail(email){
+  return String(email || '').trim().toLowerCase() === AUTHORIZED_EMAIL;
+}
+function friendlyError(error, fallback){
+  return error && error.message ? error.message : fallback;
+}
+async function load(){
+  const {data,error} = await supabaseClient
+    .from('app_state')
+    .select('data')
+    .eq('id', CLOUD_STATE_ID)
+    .maybeSingle();
+  if(error) throw error;
+
+  const remote = normalizeState(data && data.data);
+  const local = legacyState();
+
+  // Migra una sola vez los datos que ya tenías guardados en este navegador.
+  if(!localStorage.getItem(MIGRATION_KEY) && remote.deals.length === 0 && local.deals.length > 0){
+    state = local;
+    await save();
+    localStorage.setItem(MIGRATION_KEY, '1');
+  }else{
+    state = remote;
+  }
+}
+async function save(){
+  const {error} = await supabaseClient
+    .from('app_state')
+    .upsert({
+      id:CLOUD_STATE_ID,
+      data:normalizeState(state),
+      updated_at:new Date().toISOString()
+    }, {onConflict:'id'});
+  if(error){
+    console.error(error);
+    alert('No se pudieron guardar los cambios online. Revisá tu conexión e intentá de nuevo.');
+  }
+}
 
 /* ============ helpers ============ */
 const $=s=>document.querySelector(s);
@@ -379,20 +428,74 @@ function termsLine(d){
 }
 
 /* ============ auth ============ */
-function tryLogin(){
-  const val=$('#pw').value;
-  if(val===state.password){
+function showLogin(message=''){
+  $('#app').classList.remove('on');
+  $('#login').style.display='flex';
+  $('#pw-err').textContent=message;
+  $('#pw').value='';
+  $('#pw').focus();
+}
+async function openApp(){
+  try{
+    await load();
     $('#login').style.display='none';
     $('#app').classList.add('on');
     renderAll();
+  }catch(error){
+    console.error(error);
+    showLogin('No se pudieron cargar los datos. Confirmá que ejecutaste el SQL de seguridad.');
+  }
+}
+async function tryLogin(){
+  const email=$('#email').value.trim().toLowerCase();
+  const password=$('#pw').value;
+  if(!isAuthorizedEmail(email)){
+    $('#pw-err').textContent='Usá el email autorizado para este panel.';
+    return;
+  }
+  if(!password){
+    $('#pw-err').textContent='Ingresá tu contraseña.';
+    $('#pw').focus();
+    return;
+  }
+  $('#pw-err').textContent='Entrando...';
+  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+  if(error){
+    $('#pw-err').textContent=friendlyError(error,'No se pudo iniciar sesión.');
+    return;
+  }
+  await openApp();
+}
+async function signUp(){
+  const email=$('#email').value.trim().toLowerCase();
+  const password=$('#pw').value;
+  if(!isAuthorizedEmail(email)){
+    $('#pw-err').textContent='Usá el email autorizado para este panel.';
+    return;
+  }
+  if(password.length<8){
+    $('#pw-err').textContent='Usá una contraseña de al menos 8 caracteres.';
+    return;
+  }
+  $('#pw-err').textContent='Creando cuenta...';
+  const {data,error}=await supabaseClient.auth.signUp({email,password});
+  if(error){
+    $('#pw-err').textContent=friendlyError(error,'No se pudo crear la cuenta.');
+    return;
+  }
+  if(data.session){
+    await openApp();
   }else{
-    $('#pw-err').textContent='Contraseña incorrecta.';
-    $('#pw').value=''; $('#pw').focus();
+    $('#pw-err').textContent='Cuenta creada. Revisá tu email y confirmala antes de entrar.';
   }
 }
 $('#pw-btn').onclick=tryLogin;
+$('#signup-btn').onclick=signUp;
 $('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
-$('#btn-lock').onclick=()=>{$('#app').classList.remove('on');$('#login').style.display='flex';$('#pw').value='';$('#pw-err').textContent='';$('#pw').focus();};
+$('#btn-lock').onclick=async()=>{
+  await supabaseClient.auth.signOut();
+  showLogin('');
+};
 
 /* ============ render: summary ============ */
 function renderSummary(){
@@ -724,7 +827,7 @@ function openContractModal(id){
         </div>
         <input type="file" id="c-file" accept=".pdf,image/*" style="margin-top:8px;color:var(--muted);font-size:13px">
       </div>
-      <div class="note">El archivo se guarda dentro de este navegador. Manténelo liviano (ideal &lt; 1,5 MB) para no llenar el almacenamiento.</div>
+      <div class="note">El archivo se guarda online junto al deal. Manténelo liviano (ideal &lt; 1,5 MB).</div>
     </div></div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>
@@ -758,34 +861,39 @@ function removeContractFile(id){
 function openSettings(){
   openModal(`
   <div class="modal" style="max-width:460px" role="dialog" aria-modal="true">
-    <div class="modal-head"><h3>Contraseña & datos</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-head"><h3>Cuenta & datos</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
     <div class="modal-body"><div class="stack">
-      <label class="fld">Cambiar contraseña
-        <input class="input" id="s-pw" type="text" value="${esc(state.password)}" placeholder="Nueva contraseña">
+      <label class="fld">Cambiar contraseña <span style="color:var(--faint);font-weight:400">(opcional)</span>
+        <input class="input" id="s-pw" type="password" placeholder="Nueva contraseña">
       </label>
-      <div class="note">Es un bloqueo simple para esta pantalla. Como la página es pública, no guardes acá nada que no quieras que vean si comparten tu compu. La privacidad real es que los datos viven solo en este navegador.</div>
+      <div class="note">La contraseña se gestiona con Supabase. Los deals, pagos y contratos se guardan online y se ven al iniciar sesión desde otro dispositivo.</div>
       <div class="mini-title" style="margin:6px 0 4px">Backup</div>
       <div class="file-line">
         <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Exportar JSON</button>
         <label class="btn btn-ghost btn-sm" style="cursor:pointer">⬆ Importar JSON<input type="file" id="s-import" accept=".json" hidden></label>
       </div>
-      <div class="note">Exportá seguido: si limpiás el caché del navegador, los datos se borran. El JSON lo podés volver a importar acá.</div>
+      <div class="note">El backup es opcional, pero sirve para conservar una copia externa de tus datos.</div>
       <div class="mini-title" style="margin:6px 0 4px">Zona peligrosa</div>
       <button class="btn btn-danger btn-sm" style="align-self:flex-start" onclick="wipeAll()">Borrar todos los datos</button>
     </div></div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>
-      <button class="btn btn-primary" onclick="saveSettings()">Guardar contraseña</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Guardar</button>
     </div>
   </div>`);
   $('#s-import').onchange=importData;
 }
-function saveSettings(){
-  const pw=$('#s-pw').value.trim()||DEFAULT_PASSWORD;
-  state.password=pw;save();closeModal();
+async function saveSettings(){
+  const password=$('#s-pw').value.trim();
+  if(!password){closeModal();return;}
+  if(password.length<8){alert('Usá una contraseña de al menos 8 caracteres.');return;}
+  const {error}=await supabaseClient.auth.updateUser({password});
+  if(error){alert(friendlyError(error,'No se pudo cambiar la contraseña.'));return;}
+  closeModal();
+  alert('Contraseña actualizada.');
 }
 function exportData(){
-  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify(normalizeState(state),null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='centro-pagos-backup-'+new Date().toISOString().slice(0,10)+'.json';
@@ -794,28 +902,38 @@ function exportData(){
 function importData(e){
   const f=e.target.files[0]; if(!f)return;
   const r=new FileReader();
-  r.onload=()=>{
+  r.onload=async()=>{
     try{
       const obj=JSON.parse(r.result);
       if(!obj||!Array.isArray(obj.deals)) throw 0;
-      if(!confirm('Esto reemplaza todos los datos actuales por los del archivo. ¿Seguir?'))return;
-      state=obj; if(!state.password)state.password=DEFAULT_PASSWORD;
-      save();closeModal();renderAll();
+      if(!confirm('Esto reemplaza todos los datos online por los del archivo. ¿Seguir?'))return;
+      state=normalizeState(obj);
+      await save();
+      closeModal();renderAll();
     }catch(err){alert('El archivo no es un backup válido.');}
   };
   r.readAsText(f);
 }
-function wipeAll(){
-  if(!confirm('Esto borra TODOS los deals y pagos de este navegador. ¿Seguro?'))return;
+async function wipeAll(){
+  if(!confirm('Esto borra TODOS los deals y pagos online. ¿Seguro?'))return;
   if(!confirm('Última confirmación: no se puede deshacer.'))return;
-  state={password:state.password,deals:[]};save();closeModal();renderAll();
+  state={deals:[]};
+  await save();closeModal();renderAll();
 }
 $('#btn-backup').onclick=openSettings;
 $('#link-settings').onclick=e=>{e.preventDefault();openSettings();};
 
 /* ============ init ============ */
-load();
-$('#pw').focus();
+(async()=>{
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(session && isAuthorizedEmail(session.user && session.user.email)){
+    await openApp();
+  }else{
+    if(session) await supabaseClient.auth.signOut();
+    showLogin('');
+  }
+})();
 </script>
 </body>
 </html>
+
