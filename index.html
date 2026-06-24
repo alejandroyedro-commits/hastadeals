@@ -239,16 +239,12 @@ input::placeholder,textarea::placeholder{color:var(--faint)}
     </div>
     <h1>Centro de Pagos</h1>
     <div class="sub">Deals & payouts · <b class="g">21.com</b> · <b class="d">BoraWin</b></div>
-    <label class="fld">Email
-      <input id="email" class="input" type="email" value="alejandroyedro@outlook.com" placeholder="tu@email.com" autocomplete="email">
-    </label>
-    <label class="fld" style="margin-top:12px">Contraseña
-      <input id="pw" class="input" type="password" placeholder="Ingresá tu contraseña" autocomplete="current-password">
+    <label class="fld">Contraseña
+      <input id="pw" class="input" type="password" placeholder="Ingresá la contraseña" autocomplete="current-password">
     </label>
     <div class="login-err" id="pw-err"></div>
     <button class="btn btn-primary" id="pw-btn" style="width:100%;margin-top:6px;padding:11px">Entrar</button>
-    <button class="btn btn-ghost" id="signup-btn" style="width:100%;margin-top:8px;padding:10px">Crear cuenta</button>
-    <div class="login-hint">Los pagos y deals se guardan online y se sincronizan entre tus dispositivos.</div>
+    <div class="login-hint">Los pagos y deals se guardan online y se sincronizan entre tus dispositivos.<br>Sin verificación de email.</div>
   </div>
 </div>
 
@@ -316,7 +312,7 @@ const LOGO_BORA = 'data:image/webp;base64,UklGRjwIAABXRUJQVlA4IDAIAABwLgCdASqgAK
 /* ============ config ============ */
 const SUPABASE_URL = 'https://gzpwmtavtrazxccojyff.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_qhC6d-28lcbCKKdQCDvQAw_G7KV6QDB';
-const AUTHORIZED_EMAIL = 'alejandroyedro@outlook.com';
+const APP_PASSWORD = 'Hastadeals2026!Pagos';
 const CLOUD_STATE_ID = 'main';
 const LEGACY_STORAGE_KEY = 'centro_pagos_v1';
 const MIGRATION_KEY = 'centro_pagos_cloud_migrated_v1';
@@ -338,12 +334,6 @@ function normalizeState(raw){
 }
 function legacyState(){
   try{return normalizeState(JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY) || '{}'));}catch(e){return {deals:[]};}
-}
-function isAuthorizedEmail(email){
-  return String(email || '').trim().toLowerCase() === AUTHORIZED_EMAIL;
-}
-function friendlyError(error, fallback){
-  return error && error.message ? error.message : fallback;
 }
 async function load(){
   const {data,error} = await supabaseClient
@@ -440,60 +430,28 @@ async function openApp(){
     await load();
     $('#login').style.display='none';
     $('#app').classList.add('on');
+    sessionStorage.setItem('centro_pagos_unlocked','1');
     renderAll();
   }catch(error){
     console.error(error);
-    showLogin('No se pudieron cargar los datos. Confirmá que ejecutaste el SQL de seguridad.');
+    showLogin('No se pudieron cargar los datos. Confirmá que ejecutaste el SQL sin login.');
   }
 }
 async function tryLogin(){
-  const email=$('#email').value.trim().toLowerCase();
   const password=$('#pw').value;
-  if(!isAuthorizedEmail(email)){
-    $('#pw-err').textContent='Usá el email autorizado para este panel.';
-    return;
-  }
-  if(!password){
-    $('#pw-err').textContent='Ingresá tu contraseña.';
+  if(password !== APP_PASSWORD){
+    $('#pw-err').textContent='Contraseña incorrecta.';
+    $('#pw').value='';
     $('#pw').focus();
     return;
   }
   $('#pw-err').textContent='Entrando...';
-  const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-  if(error){
-    $('#pw-err').textContent=friendlyError(error,'No se pudo iniciar sesión.');
-    return;
-  }
   await openApp();
 }
-async function signUp(){
-  const email=$('#email').value.trim().toLowerCase();
-  const password=$('#pw').value;
-  if(!isAuthorizedEmail(email)){
-    $('#pw-err').textContent='Usá el email autorizado para este panel.';
-    return;
-  }
-  if(password.length<8){
-    $('#pw-err').textContent='Usá una contraseña de al menos 8 caracteres.';
-    return;
-  }
-  $('#pw-err').textContent='Creando cuenta...';
-  const {data,error}=await supabaseClient.auth.signUp({email,password});
-  if(error){
-    $('#pw-err').textContent=friendlyError(error,'No se pudo crear la cuenta.');
-    return;
-  }
-  if(data.session){
-    await openApp();
-  }else{
-    $('#pw-err').textContent='Cuenta creada. Revisá tu email y confirmala antes de entrar.';
-  }
-}
 $('#pw-btn').onclick=tryLogin;
-$('#signup-btn').onclick=signUp;
 $('#pw').addEventListener('keydown',e=>{if(e.key==='Enter')tryLogin();});
-$('#btn-lock').onclick=async()=>{
-  await supabaseClient.auth.signOut();
+$('#btn-lock').onclick=()=>{
+  sessionStorage.removeItem('centro_pagos_unlocked');
   showLogin('');
 };
 
@@ -861,12 +819,9 @@ function removeContractFile(id){
 function openSettings(){
   openModal(`
   <div class="modal" style="max-width:460px" role="dialog" aria-modal="true">
-    <div class="modal-head"><h3>Cuenta & datos</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
+    <div class="modal-head"><h3>Datos</h3><button class="icon-btn" onclick="closeModal()">✕</button></div>
     <div class="modal-body"><div class="stack">
-      <label class="fld">Cambiar contraseña <span style="color:var(--faint);font-weight:400">(opcional)</span>
-        <input class="input" id="s-pw" type="password" placeholder="Nueva contraseña">
-      </label>
-      <div class="note">La contraseña se gestiona con Supabase. Los deals, pagos y contratos se guardan online y se ven al iniciar sesión desde otro dispositivo.</div>
+      <div class="note">Los deals, pagos y contratos se guardan online en Supabase. Para cambiar la contraseña de entrada, editá en el HTML la línea <b>APP_PASSWORD</b>.</div>
       <div class="mini-title" style="margin:6px 0 4px">Backup</div>
       <div class="file-line">
         <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Exportar JSON</button>
@@ -878,19 +833,9 @@ function openSettings(){
     </div></div>
     <div class="modal-foot">
       <button class="btn btn-ghost" onclick="closeModal()">Cerrar</button>
-      <button class="btn btn-primary" onclick="saveSettings()">Guardar</button>
     </div>
   </div>`);
   $('#s-import').onchange=importData;
-}
-async function saveSettings(){
-  const password=$('#s-pw').value.trim();
-  if(!password){closeModal();return;}
-  if(password.length<8){alert('Usá una contraseña de al menos 8 caracteres.');return;}
-  const {error}=await supabaseClient.auth.updateUser({password});
-  if(error){alert(friendlyError(error,'No se pudo cambiar la contraseña.'));return;}
-  closeModal();
-  alert('Contraseña actualizada.');
 }
 function exportData(){
   const blob=new Blob([JSON.stringify(normalizeState(state),null,2)],{type:'application/json'});
@@ -925,11 +870,9 @@ $('#link-settings').onclick=e=>{e.preventDefault();openSettings();};
 
 /* ============ init ============ */
 (async()=>{
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session && isAuthorizedEmail(session.user && session.user.email)){
+  if(sessionStorage.getItem('centro_pagos_unlocked') === '1'){
     await openApp();
   }else{
-    if(session) await supabaseClient.auth.signOut();
     showLogin('');
   }
 })();
